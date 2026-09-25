@@ -1,8 +1,0 @@
-# Файлы, игнорируемые по умолчанию
-/shelf/
-/.idea/workspace.xml
-.gigaide
-.idea
-.smarttomcat
-# Environment-dependent path to Maven home directory
-/mavenHomeManager.xml
