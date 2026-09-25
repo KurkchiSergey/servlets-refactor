@@ -1,9 +1,9 @@
 package ru.netology.servlet;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.netology.config.AppConfig;
 import ru.netology.controller.PostController;
 import ru.netology.exception.NotFoundException;
-import ru.netology.repository.PostRepository;
-import ru.netology.service.PostService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,13 +18,21 @@ public class MainServlet extends HttpServlet {
     private static final String POSTS_PATH = "/api/posts";
     private static final Pattern POST_BY_ID_PATH = Pattern.compile("/api/posts/(\\d+)");
 
+    private AnnotationConfigApplicationContext context;
     private PostController controller;
 
     @Override
     public void init() {
-        final var repository = new PostRepository();
-        final var service = new PostService(repository);
-        controller = new PostController(service);
+
+        context = new AnnotationConfigApplicationContext(AppConfig.class);
+        controller = context.getBean(PostController.class);
+    }
+
+    @Override
+    public void destroy() {
+        if (context != null) {
+            context.close();
+        }
     }
 
     @Override
@@ -37,6 +45,7 @@ public class MainServlet extends HttpServlet {
             final var method = req.getMethod();
             final var idMatcher = POST_BY_ID_PATH.matcher(path);
 
+            // primitive routing
             if (GET.equals(method) && POSTS_PATH.equals(path)) {
                 controller.all(resp);
                 return;
